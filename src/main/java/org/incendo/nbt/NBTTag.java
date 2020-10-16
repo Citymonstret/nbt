@@ -58,4 +58,11 @@ public abstract class NBTTag<T> {
      */
     public abstract byte id();
 
+    /**
+     * Get the size of the tag (in bytes)
+     *
+     * @return Size of the tag
+     */
+    public abstract int size();
+
 }

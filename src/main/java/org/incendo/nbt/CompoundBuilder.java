@@ -51,7 +51,7 @@ public final class CompoundBuilder {
      * @param value Integer value
      * @return Builder instance
      */
-    public CompoundBuilder integer(final @NonNull String name, final int value) {
+    public @NonNull CompoundBuilder integer(final @NonNull String name, final int value) {
         this.tags.put(name, IntTag.of(value));
         return this;
     }
@@ -63,8 +63,20 @@ public final class CompoundBuilder {
      * @param compoundTag Compound tag
      * @return Builder instance
      */
-    public CompoundBuilder compound(final @NonNull String name, final CompoundTag compoundTag) {
+    public @NonNull CompoundBuilder compound(final @NonNull String name, final CompoundTag compoundTag) {
         this.tags.put(name, compoundTag);
+        return this;
+    }
+
+    /**
+     * Store a {@link NBTTag tag} in the compound
+     *
+     * @param name Tag name
+     * @param tag  Tag
+     * @return Builder instance
+     */
+    public @NonNull CompoundBuilder tag(final @NonNull String name, final NBTTag<?> tag) {
+        this.tags.put(name, tag);
         return this;
     }
 

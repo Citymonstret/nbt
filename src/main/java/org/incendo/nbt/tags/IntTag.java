@@ -36,6 +36,11 @@ import java.util.Objects;
  */
 public final class IntTag extends NBTTag<Integer> {
 
+    /**
+     * Size of TAG_Int
+     */
+    public static final int TAG_SIZE_INT = 4;
+
     private final int value;
 
     private IntTag(final int value) {
@@ -101,6 +106,11 @@ public final class IntTag extends NBTTag<Integer> {
     @Override
     public String toString() {
         return Integer.toString(this.value);
+    }
+
+    @Override
+    public int size() {
+        return TAG_SIZE_INT;
     }
 
 }

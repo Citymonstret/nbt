@@ -41,9 +41,17 @@ import java.util.Map;
 public final class CompoundTag extends NBTTag<Map<String, NBTTag<?>>> {
 
     private final Map<String, NBTTag<?>> tags;
+    private final int size;
 
     private CompoundTag(final @NonNull Map<@NonNull String, @NonNull NBTTag<?>> tags) {
         this.tags = tags;
+        /* Calculate the size */
+        int size = 1; /* TAG_END */
+        for (final Map.Entry<String, NBTTag<?>> tagEntry : this.tags.entrySet()) {
+            final byte[] name = tagEntry.getKey().getBytes(StandardCharsets.UTF_8);
+            size += 5 /* tag type + short */ + name.length;
+        }
+        this.size = size;
     }
 
     /**
@@ -63,8 +71,35 @@ public final class CompoundTag extends NBTTag<Map<String, NBTTag<?>>> {
      *
      * @return Created builder instance
      */
-    public static @NonNull CompoundBuilder build() {
+    public static @NonNull CompoundBuilder builder() {
         return new CompoundBuilder();
+    }
+
+    /**
+     * Read the compound tag from a byte buffer
+     *
+     * @param byteBuffer Buffer to read from
+     * @return Read compound tag
+     */
+    public static @NonNull CompoundTag from(final @NonNull ByteBuffer byteBuffer) {
+        final CompoundBuilder builder = builder();
+        byte type;
+        while ((type = byteBuffer.get()) != Tags.TYPE_TAG_END) {
+            /* Read the name */
+            final int nameLength = byteBuffer.getShort();
+            final byte[] nameBytes = new byte[nameLength];
+            byteBuffer.get(nameBytes);
+            final String name = new String(nameBytes, StandardCharsets.UTF_8);
+            /* Read the tag */
+            switch (type) {
+                case Tags.TYPE_TAG_INT:
+                    builder.tag(name, IntTag.from(byteBuffer));
+                    break;
+                default:
+                    break;
+            }
+        }
+        return builder.build();
     }
 
     @Override
@@ -79,7 +114,6 @@ public final class CompoundTag extends NBTTag<Map<String, NBTTag<?>>> {
             /* Write tag name */
             final byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
             byteBuffer.putShort((short) nameBytes.length);
-            byteBuffer.put(nameBytes);
             byteBuffer.put(nameBytes);
             /* Write tag payload */
             tag.write(byteBuffer);
@@ -96,6 +130,11 @@ public final class CompoundTag extends NBTTag<Map<String, NBTTag<?>>> {
     @Override
     public byte id() {
         return Tags.TYPE_TAG_COMPOUND;
+    }
+
+    @Override
+    public int size() {
+        return this.size;
     }
 
 }
