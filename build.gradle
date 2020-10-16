@@ -1,0 +1,51 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+plugins {
+    id 'checkstyle'
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'java-library'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+    id 'de.marcphilipp.nexus-publish' version '0.3.0'
+    id 'java'
+}
+
+checkstyle {
+    configFile file('config/checkstyle/checkstyle.xml')
+}
+
+group 'org.incendo'
+version '1.0.0-SNAPSHOT'
+
+/* Disable checkstyle on tests */
+project.gradle.startParameter.excludedTaskNames.add('checkstyleTest')
+
+license {
+    header rootProject.file('HEADER')
+    mapping 'java', 'DOUBLESLASH_STYLE'
+    includes(["**/*.java"])
+}
+
+build.dependsOn(checkstyleMain)
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.checkerframework:checker-qual:3.5.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
