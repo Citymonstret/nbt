@@ -71,7 +71,7 @@ public final class Tags {
     /**
      * TAG_List
      */
-    public static final byte TYPE_TAG_List = 9;
+    public static final byte TYPE_TAG_LIST = 9;
     /**
      * TAG_Compound
      */
